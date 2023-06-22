@@ -54,4 +54,5 @@ else:
         case 2:
             response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvp&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
     api = APIMethods.APIMethods(response)
-    api.time_table(choose_type)
+    timeTable = api.time_table(choose_type)
+    api.reading_TimeTable(timeTable)

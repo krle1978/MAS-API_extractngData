@@ -64,12 +64,12 @@ class APIMethods:
                 td_tags = soup.select("table td")
 
         for th_key in th_tags:
-            print(f"key[{i}]: {th_key.text}")
+            #print(f"key[{i}]: {th_key.text}")
             keys.append(th_key.text.strip("\t"))
             i += 1
         i = 1
         for tag in td_tags:
-            print(f"value[{i}]: {tag.text.strip()}")
+            #print(f"value[{i}]: {tag.text.strip()}")
             values.append(tag.text.strip())
             i += 1
         print()
@@ -81,16 +81,30 @@ class APIMethods:
             timetable.append({'commentar':values[index]})
         print(f"Dictionary has {len(timetable)} elements.")
         print()
-        for dict in timetable:
-            print(f"dictinary: {dict}")
+        #for dict in timetable:
+        #    print(f"dictinary: {dict}")
         return timetable
+    
+    def reading_TimeTable(self,timeTable):
+        i = 1
+        if len(timeTable) > 3:
+            for table in timeTable:
+                #print(table)
+                print(f"Line {i}:")
+                table_json = table.Json()
+                for dict in table:
+                    print(dict)
+                i += 1
+        else:
+            for dict in timeTable:
+                print(dict)
     
     def get_datum(self):
         soup = BS(self.resp.text, 'html.parser')
         select_tags = soup.find("select", {"id":"vaziod"})
         datum = select_tags.select("option")
         print()
-        print(f"option tag:\n {datum}")
+        #print(f"option tag:\n {datum}")
         datum_tag = datum[0].text.strip()
         day = datum_tag.split('.')[0]
         mont = datum_tag.split('.')[1]

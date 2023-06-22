@@ -244,7 +244,7 @@ class SeleniumTestingPage:
 
     def get_BusLines_List_withBS(self):
         driver = webdriver.Chrome()
-        driver.get(self.html_code)
+        driver.get(self.html_code.url)
         print("\nBeautiful Soup found:")
         #req = requests.get(self.html_code).text
         soup = BeautifulSoup(driver.page_source, 'lxml')
@@ -276,14 +276,12 @@ class SeleniumTestingPage:
                 if my_destination == line[0]:
                     return line
                 
-    def get_BusTimeTable(self, bus_line, choose):
+    def get_BusTimeTable(self, bus_line):
         driver = webdriver.Chrome()
-        driver.get(self.html_code)
+        driver.get(self.html_code.url)
         print(f"Choossed City: {bus_line[0]}\nIndex: {bus_line[1]}")
-        if choose ==3:
-            xPath_str = "//select[@name='linija[]']/option"
-        else:
-            xPath_str = "//select[@id='linija']/option"
+        xPath_str = "//select[@name='linija[]']/option"
+        
         element = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH,xPath_str)))
         option_select = driver.find_element(By.XPATH,f"{xPath_str}[{bus_line[1]}]")
         option_select.click()
@@ -345,7 +343,6 @@ class SeleniumTestingPage:
             for table in timeTable:
                 #print(table)
                 print(f"Line {i}:")
-                table_json = table.Json()
                 for dict in table:
                     print(dict)
                 i += 1
