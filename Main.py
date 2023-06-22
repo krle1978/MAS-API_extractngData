@@ -7,6 +7,7 @@ import json
 import pandas
 import requests
 from datetime import datetime
+import SeleniumMethods
 
 import os
 os.system('cls')
@@ -14,6 +15,7 @@ os.system('cls')
 #url = "http://www.gspns.co.rs/red-voznje-medjumesni"
 #df = pandas.read_json(url)
 #print(df)
+
 today = datetime.today()
 year = today.year
 date = today.date()
@@ -37,13 +39,19 @@ match(choose_type):
         response = requests.get(f"http://www.gspns.co.rs/red-voznje/lista-linija?rv=rvp&vaziod={datum}&dan={dayWeek.upper()}")
     case 3:
         response = requests.get("http://www.gspns.co.rs/red-voznje-medjumesni")
-
-api = APIMethods.APIMethods(response)
-value = api.choose_busDirection(choose_type)
-match choose_type:
-    case 1:
-        response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvg&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
-    case 2:
-        response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvp&vaziod=2023-06-21&dan={dayWeek.upper()}&linija%5B%5D={value}")
-api = APIMethods.APIMethods(response)
-api.time_table(choose_type)
+if choose_type == 3:
+    testing = SeleniumMethods.SeleniumTestingPage(response)
+    busLines_list = testing.get_BusLines_List_withBS()
+    destination_choose = testing.choose_destination(busLines_list)
+    polasci = testing.get_BusTimeTable(destination_choose)
+    testing.reading_TimeTable(polasci)
+else:
+    api = APIMethods.APIMethods(response)
+    value = api.choose_busDirection(choose_type)
+    match choose_type:
+        case 1:
+            response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvg&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
+        case 2:
+            response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvp&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
+    api = APIMethods.APIMethods(response)
+    api.time_table(choose_type)
