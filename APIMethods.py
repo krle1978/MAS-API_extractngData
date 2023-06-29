@@ -20,7 +20,8 @@ class APIMethods:
             bus_lines = []
             for line in linije_tags:
                 for option in line.stripped_strings:
-                    print(f"Option[{i}]: {option}")
+                    print(f"{option}")
+                    #print(f"Option[{i}]: {option}")
                     bus_lines.append([option,i])
                     i+=1
             print(f"\nCount: {len(bus_lines)}")
@@ -31,7 +32,8 @@ class APIMethods:
         else :
             directions = soup.find_all("option") 
             for direction in directions:
-                print(f"value: {direction['value']} \tText: {direction.text}")
+                print(f"{direction.text}")
+                #print(f"value: {direction['value']:<10} {direction.text}")
             bus_choice = input("Choose Your bus direction: ")
             my_directions = []
             for direction in directions:
@@ -51,7 +53,7 @@ class APIMethods:
     def time_table(self,choose_type):
         soup = BS(self.resp.text, 'html.parser')
         #print(soup.prettify())
-        timetable = []
+        timetable = {}
         keys = []
         values = []
         i = 1
@@ -75,30 +77,32 @@ class APIMethods:
         print()
         index=0
         for i in range(0,len(keys)):
-            timetable.append({keys[i]:values[i]})
+            timetable.update({keys[i]:values[i]})
             index = i + 1
         if len(keys) < len(values):
-            timetable.append({'commentar':values[index]})
-        print(f"Dictionary has {len(timetable)} elements.")
+            timetable.update({'commentar':values[index]})
+        #print(f"Dictionary has {len(timetable)} elements.")
         print()
-        #for dict in timetable:
-        #    print(f"dictinary: {dict}")
         return timetable
     
     def reading_TimeTable(self,timeTable):
         i = 1
-        if len(timeTable) > 3:
-            for table in timeTable:
-                #print(table)
-                print(f"Line {i}:")
-                table_json = table.Json()
-                for dict in table:
-                    print(dict)
+        print(f"Time table is: {type(timeTable)} Type.")
+        if type(timeTable) == list:
+            for dictionary in timeTable:
+                #print(f"[{i}]: {dictionary}")
+                print(f"--- Line {i} ---")
+                for key, value in dictionary.items():
+                    print(f"{key: <20}:{value}")
+                i += 1
+        elif type(timeTable) == dict:
+            print(f"--- Line: {i} ---")
+            for key, value in timeTable.items():
+                print(f"{key: <10}:{value}")
                 i += 1
         else:
-            for dict in timeTable:
-                print(dict)
-    
+            print("No transport found !")
+
     def get_datum(self):
         soup = BS(self.resp.text, 'html.parser')
         select_tags = soup.find("select", {"id":"vaziod"})

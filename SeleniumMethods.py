@@ -293,18 +293,18 @@ class SeleniumTestingPage:
         soup = BeautifulSoup(driver.page_source,'lxml')
         print(10*"----++")
         driver.close()
-        print("FINDING ELEMENTS:")
+        #print("FINDING ELEMENTS:")
         #print(soup.prettify())
         table_tag = soup.select("table")
         #print(f"TABLE: {table_tag}")
         tbody_tag = soup.select("tbody")
-        print(f"TBODY:\n{tbody_tag}")
+        #print(f"TBODY:\n{tbody_tag}")
         polasci = []
         if len(tbody_tag) == 0:
             table_class = soup.select("div.table-title")
             for table_tags in table_class:
                 for tag in table_tags.stripped_strings:
-                    print(tag)
+                    #print(tag)
                     polasci.append(tag)
             return polasci
         
@@ -314,27 +314,28 @@ class SeleniumTestingPage:
         i = 1
         th_tags = soup.select("tbody tr th")
         for th_key in th_tags:
-            print(f"key[{i}]: {th_key.text}")
+            #print(f"key[{i}]: {th_key.text}")
             keys.append(th_key.text.strip("\t"))
             i += 1
         tr_tags = soup.select("tbody tr")
         for i in range(1,len(tr_tags)):
             value_lokal = []
-            print(f"value:\n {tr_tags[i].children}")
+            #print(f"value:\n {tr_tags[i].children}")
             for child in tr_tags[i].children:
                 if child.text != '\n':
                     value_lokal.append(child.text.strip())
             values.append(value_lokal)
         print()
-        for j in range(len(values)):
-            timetable_lokal = []
+        index = len(values)
+        for j in range(index):
+            timetable_lokal = {}
             for i in range(len(keys)):
-                timetable_lokal.append({keys[i]:values[j][i]})
+                timetable_lokal.update({keys[i]:values[j][i]})
             timetable.append(timetable_lokal)
-            print(f"Dictionary has {len(timetable)} elements.")
+            #print(f"Dictionary has {len(timetable)} elements.")
         print()
-        for dict in timetable:
-            print(f"dictinary: {dict}")
+        #for dict in timetable:
+        #    print(f"dictinary: {dict}")
         return timetable
         
     def reading_TimeTable(self, timeTable):
