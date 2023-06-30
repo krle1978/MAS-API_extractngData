@@ -260,7 +260,8 @@ class SeleniumTestingPage:
         bus_lines = []
         for line in linije_tags:
             for option in line.stripped_strings:
-                print(f"Option[{i}]: {option}")
+                #print(f"Option[{i}]: {option}")
+                print(f"{option}")
                 bus_lines.append([option,i])
                 i+=1
         print(f"\nCount: {len(bus_lines)}")
@@ -279,23 +280,24 @@ class SeleniumTestingPage:
     def get_BusTimeTable(self, bus_line):
         driver = webdriver.Chrome()
         driver.get(self.html_code.url)
-        print(f"Choossed City: {bus_line[0]}\nIndex: {bus_line[1]}")
+        #print(f"Choossed City: {bus_line[0]}\nIndex: {bus_line[1]}")
         xPath_str = "//select[@name='linija[]']/option"
         
         element = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH,xPath_str)))
         option_select = driver.find_element(By.XPATH,f"{xPath_str}[{bus_line[1]}]")
         option_select.click()
         time.sleep(2)
+        #Selenium.click():
         btn_prikaz = driver.find_element(By.CSS_SELECTOR, "input[type='submit']")
-        
         btn_prikaz.click()
         time.sleep(5)
+        #BeautifulSoup4 take page source:
         soup = BeautifulSoup(driver.page_source,'lxml')
-        print(10*"----++")
+        #print(10*"----++")
         driver.close()
         #print("FINDING ELEMENTS:")
         #print(soup.prettify())
-        table_tag = soup.select("table")
+        #table_tag = soup.select("table")
         #print(f"TABLE: {table_tag}")
         tbody_tag = soup.select("tbody")
         #print(f"TBODY:\n{tbody_tag}")
@@ -308,35 +310,52 @@ class SeleniumTestingPage:
                     polasci.append(tag)
             return polasci
         
+        timetable_dict = {}
         timetable = []
+        titles = []
         keys = []
-        values = []
+        
         i = 1
-        th_tags = soup.select("tbody tr th")
-        for th_key in th_tags:
-            #print(f"key[{i}]: {th_key.text}")
-            keys.append(th_key.text.strip("\t"))
-            i += 1
-        tr_tags = soup.select("tbody tr")
-        for i in range(1,len(tr_tags)):
-            value_lokal = []
-            #print(f"value:\n {tr_tags[i].children}")
-            for child in tr_tags[i].children:
-                if child.text != '\n':
-                    value_lokal.append(child.text.strip())
-            values.append(value_lokal)
-        print()
-        index = len(values)
-        for j in range(index):
-            timetable_lokal = {}
-            for i in range(len(keys)):
-                timetable_lokal.update({keys[i]:values[j][i]})
-            timetable.append(timetable_lokal)
-            #print(f"Dictionary has {len(timetable)} elements.")
-        print()
-        #for dict in timetable:
-        #    print(f"dictinary: {dict}")
-        return timetable
+        table_title = soup.select("div.table-title h3")
+        for title_tag in table_title:
+            #print(f"title {i}: {title_tag}")
+            titles.append(title_tag.text)
+            #i += 1
+        tbody_tags = soup.select("tbody")
+        indexTitle = 0
+        for tbody in tbody_tags:
+            keys_local = []
+            values = []
+            i = 1
+            key_th_tags = tbody.select("tr th")
+            for th_key in key_th_tags:
+                #print(f"key[{i}]: {th_key.text}")
+                keys_local.append(th_key.text.strip("\t"))
+                i += 1
+            #keys.append(keys_local)
+            #i = 1
+            tr_values = tbody.select("tr")
+            for indexx in range(1,len(tbody.select("tr"))):
+                value_local = []
+                for value in tr_values[indexx].stripped_strings:
+                    #print(f"value[{i}]: {value}")
+                    value_local.append(value)
+                    #i += 1
+                if len(value_local)<7:
+                    value_local.append("<empty>")
+                values.append(value_local)
+            lenght_values = len(values)
+            lenght_keys = len(keys_local)
+            timetable_list = []
+            for j in range(lenght_values):
+                timetable_lokal = {}
+                for i in range(lenght_keys):
+                    timetable_lokal.update({str(keys_local[i]):values[j][i]})
+                timetable_list.append(timetable_lokal)
+            timetable_dict.update({titles[indexTitle]:timetable_list})
+            indexTitle += 1
+        return timetable_dict
+
         
     def reading_TimeTable(self, timeTable):
         i = 1

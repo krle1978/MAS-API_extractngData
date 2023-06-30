@@ -2,6 +2,7 @@ import re
 from bs4 import BeautifulSoup as BS
 from datetime import timedelta
 from APIMethods import APIMethods as API
+from colorama import Back, Fore, Style
 import webbrowser
 import json
 import pandas
@@ -11,7 +12,7 @@ from SeleniumMethods import SeleniumTestingPage as STP
 
 import os
 os.system('cls')
-
+print(Style.RESET_ALL)
 #url = "http://www.gspns.co.rs/red-voznje-medjumesni"
 #df = pandas.read_json(url)
 #print(df)
@@ -44,9 +45,12 @@ if choose_type == 3:
     apiTest = API(response)
     busLines_list = testing.get_BusLines_List_withBS()
     destination_choose = testing.choose_destination(busLines_list)
+    os.system('cls')
     polasci = testing.get_BusTimeTable(destination_choose)
     #testing.reading_TimeTable(polasci)
-    apiTest.reading_TimeTable(polasci)
+    #apiTest.reading_TimeTable(polasci)
+    os.system('cls')
+    apiTest.reading_TimeTableWithTitle(polasci)
 else:
     apiTest = API(response)
     value = apiTest.choose_busDirection(choose_type)
@@ -56,5 +60,8 @@ else:
         case 2:
             response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvp&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
     apiTest = API(response)
-    timeTable = apiTest.time_table(choose_type)
-    apiTest.reading_TimeTable(timeTable)
+    #timeTable = apiTest.time_table(choose_type)
+    timeTable = apiTest.timeTable_WithTitle(choose_type)
+    os.system('cls')
+    #apiTest.reading_TimeTable(timeTable)
+    apiTest.reading_TimeTableWithTitle(timeTable)
