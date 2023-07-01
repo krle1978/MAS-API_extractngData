@@ -43,12 +43,10 @@ match(choose_type):
 if choose_type == 3:
     testing = STP(response)
     apiTest = API(response)
-    busLines_list = testing.get_BusLines_List_withBS()
+    busLines_list = apiTest.get_BusLines_List_withBS()
     destination_choose = testing.choose_destination(busLines_list)
     os.system('cls')
     polasci = testing.get_BusTimeTable(destination_choose)
-    #testing.reading_TimeTable(polasci)
-    #apiTest.reading_TimeTable(polasci)
     os.system('cls')
     apiTest.reading_TimeTableWithTitle(polasci)
 else:
@@ -60,8 +58,6 @@ else:
         case 2:
             response = requests.get(f"http://www.gspns.co.rs/red-voznje/ispis-polazaka?rv=rvp&vaziod={datum}&dan={dayWeek.upper()}&linija%5B%5D={value}")
     apiTest = API(response)
-    #timeTable = apiTest.time_table(choose_type)
-    timeTable = apiTest.timeTable_WithTitle(choose_type)
+    timeTable = apiTest.get_timeTable_WithTitle(choose_type)
     os.system('cls')
-    #apiTest.reading_TimeTable(timeTable)
     apiTest.reading_TimeTableWithTitle(timeTable)
